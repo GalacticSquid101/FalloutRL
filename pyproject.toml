@@ -1,0 +1,24 @@
+[project]
+name = "falloutrl"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "GalacticSquid101",email = "grant101.ogden@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.12.6"
+dependencies = [
+    "tcod (>=19.4.0,<20.0.0)",
+    "numpy (>=2.3.2,<3.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "falloutrl", from = "src"}]
+
+[tool.poetry.scripts]
+falloutrl = "falloutrl.__main__:main"
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
