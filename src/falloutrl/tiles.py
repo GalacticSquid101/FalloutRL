@@ -2,6 +2,8 @@
 
 import numpy as np
 
+from falloutrl import color
+
 graphic_dt = np.dtype(
     [
         ("ch", np.int32),
@@ -31,17 +33,17 @@ def new_tile(
     return np.array((walkable, transparent, dark, light), dtype=tile_dt)
 
 
-SHROUD = np.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=graphic_dt)
+SHROUD = np.array((ord(" "), color.WHITE, color.BLACK), dtype=graphic_dt)
 
 floor = new_tile(
     walkable=True,
     transparent=True,
-    dark=(ord(" "), (255, 255, 255), (50, 50, 150)),
-    light=(ord(" "), (255, 255, 255), (200, 180, 50)),
+    dark=(ord(" "), color.WHITE, color.WASTELAND_FLOOR_DARK),
+    light=(ord(" "), color.WHITE, color.WASTELAND_FLOOR_LIGHT),
 )
 wall = new_tile(
     walkable=False,
     transparent=False,
-    dark=(ord(" "), (255, 255, 255), (50, 50, 150)),
-    light=(ord(" "), (255, 255, 255), (130, 110, 50)),
+    dark=(ord(" "), color.WHITE, color.WASTELAND_WALL_DARK),
+    light=(ord(" "), color.WHITE, color.WASTELAND_WALL_LIGHT),
 )

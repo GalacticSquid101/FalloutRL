@@ -3,15 +3,18 @@
 from __future__ import annotations
 
 import tcod
+import numpy as np
+
+from PIL import Image
 
 from falloutrl import color
 from falloutrl.game_map import GameMap
 from falloutrl.ui.message_log import MessageLog
 
-background_image = tcod.image.load("./src/falloutrl/data/background.png")[:, :, :3]
-pipboy_background_image = tcod.image.load("./src/falloutrl/data/pipboy_background.png")[
-    :, :, :3
-]
+# background_image = tcod.image.load("./src/falloutrl/data/background.png")[:, :, :3]
+# pipboy_background_image = tcod.image.load("./src/falloutrl/data/pipboy_background.png")[
+#     :, :, :3
+# ]
 
 
 class Engine:
@@ -25,18 +28,16 @@ class Engine:
         self.tileset = tileset
         self.screen_width = screen_width
         self.screen_height = screen_height
-        self.top_bar_width = screen_width
-        self.top_bar_height = 15
         self.log_width = 25
-        self.log_height = screen_height - self.top_bar_height
+        self.log_height = screen_height
         self.map_width = screen_width - self.log_width
-        self.map_height = screen_height - self.top_bar_height
+        self.map_height = screen_height
         self.pipboy_width = screen_width // 2
         self.pipboy_height = screen_height // 2
+        self.background_image = Image.open(
+            "./src/falloutrl/data/background.png"
+        ).resize((self.screen_width, self.screen_height))
         self._root_console = tcod.console.Console(screen_width, screen_height, "F")
-        self._top_bar_console = tcod.console.Console(
-            self.top_bar_width, self.top_bar_height, "F"
-        )
         self._log_console = tcod.console.Console(self.log_width, self.log_height, "F")
         self._map_console = tcod.console.Console(self.map_width, self.map_height, "F")
         self.game_map = GameMap(self.map_width, self.map_height)
@@ -47,37 +48,13 @@ class Engine:
 
     def run(self) -> None:
         """Loops infinitely controlling the game loop."""
-        with tcod.context.new(
-            columns=self.screen_width,
-            rows=self.screen_height,
-            tileset=self.tileset,
-            title="FalloutRL",
-        ) as context:
-            while True:
-                self.render()
-                context.present(self._root_console)
-                for event in tcod.event.wait():
-                    context.convert_event(event)
-                    if isinstance(event, tcod.event.Quit):
-                        raise SystemExit()
-                    if (
-                        isinstance(event, tcod.event.KeyDown)
-                        and event.sym == tcod.event.KeySym.I
-                    ):
-                        self.pipboy_shown = True
-
-                self.message_log.add_message("Run Loop!")
+        pass
 
     def render(self) -> None:
         """Render the whole game here"""
         self._root_console.clear()
 
         # self._root_console.draw_semigraphics(background_image)
-
-        self._top_bar_console.print(
-            1, 1, text="UI CONSOLE", fg=color.UI_FG, bg=color.UI_BG
-        )
-        self._top_bar_console.blit(self._root_console, bg_alpha=0.5)
 
         self.message_log.render(
             self._log_console, 0, 0, self.log_width, self.log_height
@@ -90,10 +67,12 @@ class Engine:
         )
 
         self.game_map.render(self._map_console)
-        self._map_console.blit(self._root_console, 0, self.top_bar_height, bg_alpha=0.5)
+        self._map_console.blit(self._root_console, 0, 0, bg_alpha=0.5)
 
         if self.pipboy_shown:
-            self._pipboy_console.draw_semigraphics(background_image)
+            self._pipboy_console.draw_semigraphics(
+                np.array(self.background_image.convert("RGB"))
+            )
             self._pipboy_console.draw_frame(0, 0, self.pipboy_width, self.pipboy_height)
             self._pipboy_console.print(
                 0,
